@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+# MogoDb Services
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: claphamgraham
+      MONGO_INITDB_ROOT_PASSWORD: b4S6APRXbrunn8Xz
+      MONGO_INITDB_DATABASE: testbase  
+
+# API Services
+  api:
+    build: 
+      dockerfile: Dockerfile
+      context: ./server
+    container_name: api
+    restart: always
+    ports:
+      - 5001:5001
+
+    environment:
+      PORT: 5001
+      MONGO_URI: mongodb+srv://claphamgraham:b4S6APRXbrunn8Xz@democluster.qk2fzlj.mongodb.net
+      DB_NAME: testbase
+      NAME: DemoApi
+    depends_on:
+      - mongo_db
+
+# Client Services
+  client:
+    build: 
+      dockerfile: Dockerfile
+      context: ./client
+    container_name: client
+    restart: always
+    ports:
+      - 3000:80
+    expose:
+      - 3000    
+    environment:
+      REACT_APP_API_URL: http://localhost:5173
+    depends_on:
+      - api
+      - mongo_db
+
+   # Reverse-proxy Services
+  nginx:
+    depends_on:
+      - api
+      - client
+      - mongo_db 
+
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "80:80"
+    links:
+      - client
+      - api 
+
+volumes:
+  mongo_db:

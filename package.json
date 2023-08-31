@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "scripts": {
+    "dev:up": "docker compose -f docker-compose.dev.yml up",
+    "dev:up:build": "docker compose -f docker-compose.dev.yml up --build",
+    "dev:down": "docker compose -f docker-compose.dev.yml down",
+    "prod:up": "docker compose -f docker-compose.yml up",
+    "prod:up:build": "docker compose -f docker-compose.yml up --build",
+    "prod:down": "docker compose -f docker-compose.yml down"
+  }
+}

@@ -7,8 +7,8 @@ on:
     branches: ['main']
 
 jobs:
-    job:
-        name: testing
+    test-server:
+        name: testing-server
         runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v3
@@ -16,5 +16,41 @@ jobs:
             with:
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
-          - run: docker build -t mrclapham/fullstack-amplify-server -f Dockerfile.dev ./server
-          - run: docker run -e CI=true mrclapham/fullstack-amplify-server npm test         
+          - run: docker build -t mrclapham/fullstack-amplify-server -f server/Dockerfile.dev ./server
+          - run: docker run -e CI=true mrclapham/fullstack-amplify-server npm test   
+    test-client:
+        name: testing-client
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - uses: docker/login-action@v2
+            with:
+              username: ${{ secrets.DOCKER_USERNAME }}
+              password: ${{ secrets.DOCKER_PASSWORD }}
+          - run: docker build -t mrclapham/fullstack-amplify-client -f client/Dockerfile.dev ./client
+          - run: docker run -e CI=true mrclapham/fullstack-amplify-client npm test
+
+          - run: docker build -t mrclapham/mern-client ./client
+          - run: docker build -t mrclapham/mern-nginx ./nginx
+          - run: docker build -t mrclapham/mern-server ./server
+     
+          - run: docker push mrclapham/mern-client
+          - run: docker push mrclapham/mern-nginx
+          - run: docker push mrclapham/mern-server
+     
+          - name: Generate deployment package
+            run: zip -r deploy.zip . -x '*.git*'
+    #  comment out or delete this if NOT deploying to AWS –           
+    #  replace 'docker-react-bench' with your application name 
+          - name: Deploy to EB
+            uses: einaregilsson/beanstalk-deploy@v18
+            with:
+              aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+              aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+              application_name: docker-react-bench
+              environment_name: Docker-react-bench-env
+              existing_bucket_name: elasticbeanstalk-us-east-1-318746526342
+              region: us-east-1
+              version_label: ${{ github.sha }}
+              deployment_package: deploy.zip
+          
