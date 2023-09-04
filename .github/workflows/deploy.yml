@@ -37,13 +37,18 @@ jobs:
           - run: docker push mrclapham/mern-client
           - run: docker push mrclapham/mern-nginx
           - run: docker push mrclapham/mern-server
-     
-          - name: Generate deployment package
-            run: zip -r deploy.zip . -x '*.git*'
+          
     #  comment out or delete this if NOT deploying to AWS –           
     #  replace 'docker-react-bench' with your application name 
+    deploy-to-aws:
+      name: deploy-aws
+      runs-on: ubuntu-latest
+      steps:
+          - name: Create deployment package
+          - run: zip -r deploy.zip . -x '*.git*'
+
           - name: Deploy to EB
-            uses: einaregilsson/beanstalk-deploy@v18
+          - uses: einaregilsson/beanstalk-deploy@v18
             with:
               aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
               aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
