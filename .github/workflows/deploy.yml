@@ -38,7 +38,7 @@ jobs:
           - run: docker push mrclapham/mern-nginx
           - run: docker push mrclapham/mern-server
           
-    #  comment out or delete this if NOT deploying to AWS –           
+    #  comment out or delete this if NOT deploying to AWS –          
     #  replace 'docker-react-bench' with your application name 
     deploy-to-aws:
       name: deploy-aws
