@@ -46,6 +46,7 @@ jobs:
       steps:
           - name: Create deployment package
             run: zip -r deploy.zip . -x '*.git*'
+          - uses: actions/checkout@v3
           - uses: einaregilsson/beanstalk-deploy@v18
             with:
               aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
