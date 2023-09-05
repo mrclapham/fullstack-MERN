@@ -344,39 +344,3 @@ The RDS and EC primary endpoints need to be added to the Environment properties
  Go to ElastiCache → Redis clusters -\> multi-docker-demo-test
  Under Cluster details find and copy Configuration endpoint, without the trailing colon and numbers denoting the port, eg: multi-docker-demo-test.abcdef.clustercfg.euw2.cache.amazonaws.com ~~:6379~~
 
-1. **RDS/Postgres – endpoint\*\***
- Go to RDS → Databases → multi-docker-rds
-
-Under Connectivity & security → Endpoint & port copy the Endpoint
-
-Eg: multi-docker-rds.abcde12345.eu-west-2.rds.amazonaws.com
-
-Add the name value pairs:
- REDIS\_HOST: [EC/Redis – endpoint (a)]
-
-REDIS\_PORT:: 6379
-
-PGUSER: postgres\*
- PGPASSWORD: postgres\_password\*
-
-PGDATABASE: fibvalues\*
-
-PGHOST: [RDS/Postres – endpoint (b)]
-
-PGPORT=5432
-
-_\*set when the database was set up initially, it will need to have been recoded on setup as it can't be accessed later_
-
-Master username
-
-postgres
-
-Master password
-
-postgres\_password
-
-Endpoint
-
-multi-docker-rds.cqe6gm72lk5d.eu-west-2.rds.amazonaws.com
-
-Database name\; fibvalues
