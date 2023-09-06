@@ -344,3 +344,6 @@ The RDS and EC primary endpoints need to be added to the Environment properties
  Go to ElastiCache → Redis clusters -\> multi-docker-demo-test
  Under Cluster details find and copy Configuration endpoint, without the trailing colon and numbers denoting the port, eg: multi-docker-demo-test.abcdef.clustercfg.euw2.cache.amazonaws.com ~~:6379~~
 
+
+ 
+
