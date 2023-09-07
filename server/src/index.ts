@@ -18,6 +18,21 @@ app.get('/', (req: Request, res: Response): void => {
     res.json({message: 'Hello from the API!', env_name: process.env.NAME});
 });
 
+app.get('/hello', (req: Request, res: Response): void => {
+    res.json({message: 'Hello from the API!', env_name: process.env.NAME});
+});
+
+app.get(`${apiVersion}/data`, (req: Request, res: Response): void => {
+    const data = {uri: process.env.MONGO_URI || "no uri",
+         dbName: process.env.DB_NAME,
+         user: process.env.DB_USER,
+        pass: process.env.DB_PASS}
+    res.json(data);
+});
+
+
+
+
 app.get(`${apiVersion}/products`, async (req: Request, res: Response): Promise<void> => {
     const results = await getAllProducts(res);
 });
