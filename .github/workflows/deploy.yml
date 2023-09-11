@@ -7,6 +7,8 @@ name: Deploy pipeline
     branches:
       - main
 jobs:
+ # Add your Docker Hub credentials to your GitHub repository secrets
+ # as DOCKER_USERNAME and DOCKER_PASSWORD
   test-server:
     name: testing-server
     runs-on: ubuntu-latest
@@ -39,6 +41,12 @@ jobs:
       - run: docker push mrclapham/mern-client
       - run: docker push mrclapham/mern-nginx
       - run: docker push mrclapham/mern-server
+      # The following steps are for deploying to AWS Elastic Beanstalk
+      # Change the values below to match your AWS account
+      # - application_name: <your application name>
+      # - environment_name: <your application environment name>
+      # - existing_bucket_name: <the Elastic Beanstalk S3 Bucket created for the region the app was created in>
+      # - region: <The region of the app and S3 Bucket>
   deploy-to-aws:
     name: deploy-aws
     runs-on: ubuntu-latest
