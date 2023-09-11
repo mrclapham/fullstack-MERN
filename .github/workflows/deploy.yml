@@ -50,6 +50,7 @@ jobs:
   deploy-to-aws:
     name: deploy-aws
     runs-on: ubuntu-latest
+    needs: [test-client, test-server]
     steps:
       - uses: actions/checkout@v3
       - run: zip -r deploy.zip . -x '*.git*'
