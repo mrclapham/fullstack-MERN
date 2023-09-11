@@ -29,7 +29,7 @@ function App(): ReactElement {
 
           <button className={'adder'}
             onClick={async () => {
-              addProduct({ name: productName, price: productPrice }).then(res => {
+              addProduct({ name: productName, price: productPrice }).then(() => {
                 getAllProducts().then(res => {
                   setProducts(res);
                 })
