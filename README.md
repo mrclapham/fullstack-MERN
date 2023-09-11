@@ -49,16 +49,18 @@ Install [Mongo Compass](https://www.mongodb.com/products/compass) and add a new 
 }
 ```
 
-### Database initialisation – development
+### Database initialization – development
 run:
 ```
-$ yarn dev:build
+$ yarn dev:up:build
 ```
 Open the MongoDB Compass application, from the Connect menu choose ‘New window’ to open the connection in a new window and click the ‘New connection’ button. 
 
 In the URI field type: ```mongodb://localhost:27017 ```. 
 
-Drop down the ‘Advanced Connection Options’ menu, select ‘Authentication’ and choose ‘Authentication Method -> Username/Password’. Username and password are both 'root'. This is set in the ```docker-compose.dev.yml``` file and may be changed here, if you wish: 
+Drop down the ‘Advanced Connection Options’ menu, select ‘Authentication’ and choose ‘Authentication Method -> Username/Password’. 
+
+Username and password are both 'root'. This is set in the ```docker-compose.dev.yml``` file and may be changed here, if you wish: 
 
 ```yaml
 services:
@@ -108,7 +110,9 @@ If you do not already have an account with [MongoDb](https://cloud.mongodb.com/)
 
 Go to the ‘MongoDB Atlas’ portal and create a new project, name it anything you wish.
 
-Click the ‘CONNECT’ button and under ‘Connect to your application’ click ‘Drivers’, choose ‘Node.js 5.5 or later’ and under ‘3. Add your connection string into your application code’ copy the connection string. Add this to the file ‘docker-compose.yml’ 
+Click the ‘CONNECT’ button and under ‘Connect to your application’ click ‘Drivers’, choose ‘Node.js 5.5 or later’ and under ‘3. 
+
+Add your connection string into your application code’ copy the connection string, adding the password, where indicated. Add this to the file ‘docker-compose.yml’ 
 ```yaml
 # API Services
   api:
@@ -138,32 +142,60 @@ This builds the following (NB: This is a local build, allowing a local dry-run b
 
 ![Alt text](readme_images/DockerComposeDiagram_prod.png)
 
-
-    "dev:up": "docker compose -f docker-compose.dev.yml up",
-    "dev:up:build": "docker compose -f docker-compose.dev.yml up --build",
-    "dev:down": "docker compose -f docker-compose.dev.yml down",
-    "prod:up": "docker compose -f docker-compose.yml up",
-    "prod:up:build": "docker compose -f docker-compose.yml up --build",
-    "prod:down": "docker compose -f docker-compose.yml down"
-
-
-
-
 # AWS Setup
 
-**Create EC2 IAM Role**
+## Create EC2 IAM Role
 <ol>
 <li>Go to AWS Management Console</li>
 <li>Search for <strong>IAM</strong> and click the IAM Service.</li>
-<li>Click **Roles** under **Access Management** in the left sidebar.</li>
-<li>Click the **Create role** button.</li>
-<li>Select **AWS Service** under **Trusted entity type**. Then select **EC2** under **common use cases**.</li>
-<li>Search for **AWSElasticBeanstalk** and select both the **AWSElasticBeanstalkWorkerTier** and **AWSElasticBeanstalkMulticontainerDocker** policies. Click the **Next** button.</li>
-<li>Give the role the name of **aws-elasticbeanstalk-ec2-role**</li>
-<li>Click the **Create role** button.</li>
+<li>Click <strong>Roles</strong> under <strong>Access Management</strong> in the left sidebar.</li>
+<li>Click the <strong>Create role</strong> button.</li>
+<li>Select <strong>AWS Service</strong> under <strong>Trusted entity type</strong> Then select <strong>EC2</strong> under <strong>common use cases</strong>.</li>
+<li>Search for <strong>AWSElasticBeanstalk</strong> and select: 
+  <ul>
+<li>AWSElasticBeanstalkEnhancedHealth	</li>
+<li>AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy	</li>
+<li>AWSElasticBeanstalkMulticontainerDocker	A</li>
+<li>AWSElasticBeanstalkWorkerTier</li>
+  </ul>
+ policies. Click the <strong>Next</strong> button.</li>
+ <li>Add the following Services to <strong>Trust Entities</strong> by opening the the <strong>Trust relationships</strong> tab
+ <ul>
+   <li>elasticbeanstalk.amazonaws.com</li>
+  <li>ec2.amazonaws.com</li>
+ </ul>
+<em>* See Trusted entities below for format</em>
+  </li>
+<li>Give the role the name of <strong>aws-elasticbeanstalk-ec2-role<strong></li>
+<li>Click the <strong>Create role</strong> button.</li>
 </ol>
 
-**Create Elastic Beanstalk Environment**
+**Trusted entities*
+
+Trust relationships->Trusted entities should be as follows:
+ ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "elasticbeanstalk.amazonaws.com",
+                    "ec2.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+  ```
+
+## Create Elastic Beanstalk Environment
+
+<ul>
+
+</ul>
 
 1. Go to AWS Management Console
 2. Search for **Elastic Beanstalk** and click the Elastic Beanstalk service.
@@ -179,170 +211,91 @@ This builds the following (NB: This is a local build, allowing a local dry-run b
 12. Click the **Submit** button and wait for your new Elastic Beanstalk application and environment to be created and launched.
 13. Click the link below the checkmark under Domain. This should open the application in your browser and display a Congratulations message.
 
-**Update Object Ownership of S3 Bucket**
-
-1. Go to AWS Management Console
-
-2. Search for **S3** and click the S3 service.
-
-3. Find and click the elasticbeanstalk bucket that was automatically created with your environment.
-
-4. Click **Permissions** menu tab
-
-5. Find **Object Ownership** and click **Edit**
-
-6. Change from **ACLs disabled** to **ACLs enabled**. Change **Bucket owner Preferred** to **Object Writer**. Check the box acknowledging the warning.
-
-7. Click **Save changes**.
+## Update Object Ownership of S3 Bucket
+<ol>
+<li>Go to AWS Management Console</li>
+<li>Search for <strong>S3</strong> and click the S3 service.</li>
+<li>Find and click the elasticbeanstalk bucket that was automatically created with your environment.</li>
+<li>Click <strong>Permissions</strong> menu tab</li>
+<li>Find <strong>Object Ownership</strong> and click <strong>Edit</strong></li>
+<li>Change from <strong>ACLs disabled</strong> to <strong>ACLs enabled</strong>. Change <strong>Bucket owner Preferred</strong> to <strong>Object Writer</strong>. Check the box acknowledging the warning.</li>
+<li>Click <strong>Save changes</strong>.</li>
+</ol>
 
 ## Getting the AWS Access and Secret Keys for GitHub Action deployment
+<ol>
+<li>Select the IAM user that was just created from the list of users</li>
+<li>Click <strong>Security Credentials</strong></li>
+<li>Scroll down to find <strong>Access Keys</strong></li>
+<li>Click <strong>Create access key</strong></li>
+<li>Select <strong>Command Line Interface (CLI)</strong></li>
+<li>Scroll down and tick the "I understand..." check box and click "Next"</li>
+<li>Copy and/or download the _Access Key ID_ and _Secret Access Key_ to use for deployment.</li>
+</ol>
 
-1. Select the IAM user that was just created from the list of users
-2. Click " **Security Credentials**"
-3. Scroll down to find " **Access Keys**"
-4. Click " **Create access key**"
-5. Select "**Command Line Interface (CLI)**"
-6. ![](RackMultipart20230825-1-y6mgf_html_33d5cc6fe44c0233.png)
-7. Scroll down and tick the "I understand..." check box and click "Next"
-8. Copy and/or download the _Access Key ID_ and _Secret Access Key_ to use for deployment.
-
-![Shape1](RackMultipart20230825-1-y6mgf_html_cb55ddb5edd60516.gif)
 
 # GitHub Actions & GitHub Secrets
 
-In the root of your app create the following file
+In the root of your app edit the following file
 
-.github/workflows/deploy.yaml
-
-(NB: the name 'deploy.yaml' is not important, you may name it how you see fit)
+```.github/workflows/deploy.yaml```
 
 When committed and pushed to the GitHub repo this will add an Action to the GitHub Actions for that repository.
 
-For it to work, 'secrets' also need to be created for the repository – these are environment variables used to replace ${{secrets.DOCKER\_USERNAME}}, for example, when the Action is run, using the .yaml file.
+For it to work, 'secrets' also need to be created for the repository – these are environment variables used to replace ```${{secrets.DOCKER\_USERNAME}}```, for example, when the Action is run, using the .yaml file.
 
 Secrets are scoped to the individual repository and may be safely used in public repositories as they remain secret. If they are forgotten it is not possible to retrieve them, they need to be destroyed and recreated.
 
-You will need to add the following secrets:
+You will need to add the following secrets (NB: keep the format as typed below so they work with the existing):
 
-secrets.DOCKER\_USERNAME
+- DOCKER\_USERNAME
+- DOCKER\_PASSWORD
+- AWS\_ACCESS\_KEY
+- AWS\_SECRET\_KEY
 
-secrets.DOCKER\_PASSWORD
+You will also need the following information, from the AWS step above:
 
-secrets.AWS\_ACCESS\_KEY
+- application\_name
+- environment\_name
+- existing\_bucket
+- region
 
-secrets.AWS\_SECRET\_KEY
+For example:
 
-You will also need, from the AWS step above:
-
-application\_name:multi-gh
-
-environment\_name:Multigh-env
-
-existing\_bucket\_name:elasticbeanstalk-us-east-1-923445559289
-
-In addition you will need to replace the dockeruserin the lines beginning
--run:dockerbuild-tdockeruser/...
-
-It is best practice to add the username to the path eg:
--run:dockerbuild-tmyusername/multi-client-10-14./client
-
-name:DeployMultiDocker
-
-on:
-
-push:
-
-branches:
-
--main#checkyourrepo,yourdefaultbranchmightbemaster!
-
-jobs:
-
-build:
-
-runs-on:ubuntu-latest
-
-steps:
-
--uses:actions/checkout@v3
-
-- uses: docker/login-action@v2
-
-with:
-
-username: ${{ secrets.DOCKER\_USERNAME }}
-
-password: ${{ secrets.DOCKER\_PASSWORD }}
-
--run:dockerbuild-tdockeruser/react-test-f./client/Dockerfile.dev./client
-
--run:dockerrun-eCI=truedockeruser/react-testnpmtest
-
--run:dockerbuild-tdockeruser/multi-client-10-14./client
-
--run:dockerbuild-tdockeruser/multi-nginx-10-14./nginx
-
--run:dockerbuild-tdockeruser/multi-server-10-14./server
-
--run:dockerbuild-tdockeruser/multi-worker-10-14./worker
-
--run:dockerpushdockeruser/multi-client-10-14
-
--run:dockerpushdockeruser/multi-nginx-10-14
-
--run:dockerpushdockeruser/multi-server-10-14
-
--run:dockerpushdockeruser/multi-worker-10-14
-
--name:Generatedeploymentpackage
-
-run:zip-rdeploy.zip.-x'\*.git\*'
-
--name:DeploytoEB
-
-uses:einaregilsson/beanstalk-deploy@v18
-
-with:
-
-aws\_access\_key:${{secrets.AWS\_ACCESS\_KEY}}
-
-aws\_secret\_key:${{secrets.AWS\_SECRET\_KEY}}
-
-application\_name:multi-gh
-
-environment\_name:Multigh-env
-
-existing\_bucket\_name:elasticbeanstalk-us-east-1-923445559289
-
-region:us-east-1
-
-version\_label:${{github.sha}}
-
-deployment\_package:deploy.zip
-
-
-
-![Shape2](RackMultipart20230825-1-y6mgf_html_cb55ddb5edd60516.gif)
-
-## FOR PRODUCTION
+```yaml
+    deploy-to-aws:
+    name: deploy-aws
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: zip -r deploy.zip . -x '*.git*'
+      - uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          aws_access_key: '${{ secrets.AWS_ACCESS_KEY }}'
+          aws_secret_key: '${{ secrets.AWS_SECRET_KEY }}'
+          application_name: mern-beanstalk
+          environment_name: Mern-beanstalk-env
+          existing_bucket_name: elasticbeanstalk-eu-west-2-318746526342
+          region: eu-west-2
+          version_label: '${{ github.sha }}'
+          deployment_package: deploy.zip
+```
 
 
-**Elastic BeanStalk Security Group**
+In addition it is best practice to replace "dockeruser" in the lines beginning
+```yaml 
+      - run: docker build -t mrclapham/mern-client ./client
+```
+with your own docker usename, eg:
+```yaml 
+      - run: docker build -t my-docker-username/mern-client ./client
+```
 
-Go to Elastic Beanstalk → Environments, select the previously created EC2 instance, in this case "Docker-aws-deploy-example-app-env", click the link and select 'Configuration' from the side menu.
- Select the 'Instance traffic and scaling' panel and click on the Edit button. In 'EC2 security groups' and choose the 'multi-docker' Security Group from the Security Group.
+Make some changes to your code and push or merge with 'main'. 
 
-_Get the instances to talk to one another._
+Assuming all tests pass it will build and deploy a new version of the app.
 
-Now add all the Environment variables used in the docker-compose.yml
 
-Still in EC2, Elastic Beanstalk → Environments → Docker-aws-deploy-example-app-env → Configuration, Select the 'Platform software' panel and under Environment Properties add the key value pairs and click the Add environment Properties button.
-
-The RDS and EC primary endpoints need to be added to the Environment properties
-
-1. **EC/Redis – endpoint**
- Go to ElastiCache → Redis clusters -\> multi-docker-demo-test
- Under Cluster details find and copy Configuration endpoint, without the trailing colon and numbers denoting the port, eg: multi-docker-demo-test.abcdef.clustercfg.euw2.cache.amazonaws.com ~~:6379~~
 
 
  
