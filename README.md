@@ -31,7 +31,7 @@ The following 'Secrets' will require adding to the GitHub repo:
     AWS_ACCESS_KEY
     AWS_SECRET_KEY
 
-If not deploying to AWS, in the file '.github/workflows/deploy.yml', comment out or delete the final selection beginning ``` - name: Deploy to EB``` as this will fail if correct AWS Keys are not supplied
+If not deploying to AWS, in the file '.github/workflows/deploy.yml', comment out or delete the final selection beginning ```deploy-to-aws: ``` as this will fail if correct AWS Keys are not supplied
 
 Details of how to obtain the correct values are described below in the relevant sections.
 
@@ -40,7 +40,7 @@ To add the Secrets, in the project’s Git repository, go to Settings -> Secrets
 ## Development mode
 
 ### Setup Development
-Install [Mongo Compass](https://www.mongodb.com/products/compass) and add a new database called 'testbase' with a collection called 'products'. The app will add items withe the following shape:
+Install [Mongo Compass](https://www.mongodb.com/products/compass) and add a new database called 'testbase' with a collection called 'products'. The app will add items with the following shape:
 
 ```
 {
